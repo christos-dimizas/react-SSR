@@ -15,10 +15,9 @@ In this part we added the client side development of the SSR process. In more de
 
 So, now in order to run the whole app we must:
 
-- Build the server side     - Run:  `npm run dev:build:server`
-- Build the client side     - Run:  `npm run dev:build:client`
-- Watch and restart server  - Run:  `npm run dev:server`
+- After new refactoring with npm-run-all now we only have to run: `npm run dev`
 
+**NOTE**: install first globally the nodemon dependency
 
 
 **------------------------------------------------------------------------------------------------**
