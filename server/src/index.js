@@ -22,15 +22,32 @@ app.use('/api', proxy('http://react-ssr-api.herokuapp.com', {
 // automatically pointed to the public folder.
 app.use(express.static('public'));
 
-// Express here watches all urls on port 3000 and responds with the <Home/> as a string
+// Express here watches all urls on port 3000 and responds with the respective Route result as a string
 app.get('*', (req, res) => {
     const store = createStore(req);
     const promises = matchRoutes(Routes, req.path).map(({route}) =>
         route.loadData ? route.loadData(store) : null
     );
 
+    // iterate over all promises and make sure that all promises are always resolved.
+    promises.map((promise) =>{
+        if (promise) {
+            return new Promise((resolve, reject) => {
+                promise.then(resolve).catch(resolve);
+            })
+        }
+    });
+
     Promise.all(promises).then(() => {
-        res.send(renderer(req, store));
+        const context = {};
+        const renderedContent = renderer(req, store, context);
+        if (context.url) {
+            return res.redirect(301, context.url);
+        }
+        if (context.notFound) {
+            res.status(404);
+        }
+        res.send(renderedContent);
     });
 });
 
